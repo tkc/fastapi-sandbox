@@ -9,9 +9,7 @@ class SearchUsersUseCase:
     def __init__(self, user_repository: IUserRepository) -> None:
         self._user_repository = user_repository
 
-    def execute(
-        self, name: str | None, email: str | None
-    ) -> list[UserResponse]:
+    def execute(self, name: str | None, email: str | None) -> list[UserResponse]:
         if name and email:
             users = self._user_repository.search_by_name(name)
             users = [u for u in users if u.email == email]

@@ -12,7 +12,7 @@ router = APIRouter()
 
 
 @router.post("", response_model=UserResponse, status_code=201)
-def create_user(user: UserCreate):
+def create_user(user: UserCreate) -> UserResponse:
     usecase = DIContainer.resolve(CreateUserUseCase)
     return usecase.execute(user)
 
@@ -21,21 +21,21 @@ def create_user(user: UserCreate):
 def search_users(
     name: str | None = Query(default=None),
     email: str | None = Query(default=None),
-):
+) -> list[UserResponse]:
     usecase = DIContainer.resolve(SearchUsersUseCase)
     return usecase.execute(name=name, email=email)
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-def get_user(user_id: str):
+def get_user(user_id: str) -> UserResponse:
     usecase = DIContainer.resolve(GetUserUseCase)
     try:
         return usecase.execute(user_id)
-    except UserNotFoundError:
-        raise HTTPException(status_code=404, detail="User not found")
+    except UserNotFoundError as err:
+        raise HTTPException(status_code=404, detail="User not found") from err
 
 
 @router.get("", response_model=list[UserResponse])
-def list_users():
+def list_users() -> list[UserResponse]:
     usecase = DIContainer.resolve(ListUsersUseCase)
     return usecase.execute()

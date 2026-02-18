@@ -121,9 +121,7 @@ def test_search_by_name_and_email(client):
         },
     )
 
-    response = client.get(
-        "/users/search", params={"name": "Dual", "email": "dual@example.com"}
-    )
+    response = client.get("/users/search", params={"name": "Dual", "email": "dual@example.com"})
     assert response.status_code == 200
     results = response.json()
     assert len(results) == 1

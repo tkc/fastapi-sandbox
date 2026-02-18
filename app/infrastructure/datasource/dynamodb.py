@@ -1,9 +1,11 @@
+from typing import Any
+
 import boto3
 
 from app.core.config import settings
 
 
-def get_dynamodb_resource():
+def get_dynamodb_resource() -> Any:
     return boto3.resource(
         "dynamodb",
         endpoint_url=settings.dynamodb_endpoint,
@@ -13,12 +15,12 @@ def get_dynamodb_resource():
     )
 
 
-def get_table():
+def get_table() -> Any:
     dynamodb = get_dynamodb_resource()
     return dynamodb.Table(settings.dynamodb_table_name)
 
 
-def create_users_table():
+def create_users_table() -> Any:
     dynamodb = get_dynamodb_resource()
     existing_tables = dynamodb.meta.client.list_tables()["TableNames"]
     if settings.dynamodb_table_name in existing_tables:
