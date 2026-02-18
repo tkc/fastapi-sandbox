@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query
+from starlette import status
 
 from app.api.dependencies import get_user_service
 from app.core.types import UserId
@@ -8,7 +9,7 @@ from app.usecase.user.user_service import UserService
 router = APIRouter()
 
 
-@router.post("", response_model=UserResponse, status_code=201)
+@router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(
     user: UserCreate,
     service: UserService = Depends(get_user_service),

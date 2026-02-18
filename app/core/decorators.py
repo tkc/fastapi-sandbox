@@ -7,6 +7,14 @@ from typing import Any
 import structlog
 from pydantic import BaseModel
 
+from app.core.constants import (
+    LOG_ACTION_ERROR,
+    LOG_ACTION_START,
+    LOG_ACTION_SUCCESS,
+    NS_PER_MS,
+    REDACTED,
+)
+
 
 def _build_safe_args(
     sig: inspect.Signature,
@@ -21,7 +29,7 @@ def _build_safe_args(
         if name == "self":
             continue
         if name in exclude_args:
-            safe[name] = "[REDACTED]"
+            safe[name] = REDACTED
         elif isinstance(value, BaseModel):
             safe[name] = f"<{type(value).__name__}>"
         else:
@@ -50,21 +58,21 @@ def log_action(
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             bound_args = _build_safe_args(_sig, args, kwargs, exclude_args)
-            _logger.info("action.start", action=_action, **bound_args)
+            _logger.info(LOG_ACTION_START, action=_action, **bound_args)
             start = time.perf_counter_ns()
             try:
                 result = func(*args, **kwargs)
             except Exception:
-                duration_ms = (time.perf_counter_ns() - start) / 1_000_000
+                duration_ms = (time.perf_counter_ns() - start) / NS_PER_MS
                 _logger.exception(
-                    "action.error",
+                    LOG_ACTION_ERROR,
                     action=_action,
                     duration_ms=round(duration_ms, 2),
                 )
                 raise
-            duration_ms = (time.perf_counter_ns() - start) / 1_000_000
+            duration_ms = (time.perf_counter_ns() - start) / NS_PER_MS
             _logger.info(
-                "action.success",
+                LOG_ACTION_SUCCESS,
                 action=_action,
                 duration_ms=round(duration_ms, 2),
                 **_summarize_result(result),

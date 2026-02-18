@@ -1,3 +1,4 @@
+from app.core.constants import ERROR_USER_NOT_FOUND
 from app.core.types import UserId
 
 
@@ -10,7 +11,7 @@ class AppError(Exception):
 class UserNotFoundError(AppError):
     def __init__(self, user_id: UserId) -> None:
         self.user_id = user_id
-        super().__init__(f"User not found: {user_id}")
+        super().__init__(f"{ERROR_USER_NOT_FOUND}: {user_id}")
 
 
 class RepositoryError(AppError):
