@@ -10,9 +10,7 @@ logger = structlog.stdlib.get_logger()
 
 
 class LoggingMiddleware(BaseHTTPMiddleware):
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         structlog.contextvars.clear_contextvars()
 
         trace_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
