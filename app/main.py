@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 def create_app() -> FastAPI:
     app = FastAPI(title="User API", lifespan=lifespan)
     app.add_middleware(
-        CORSMiddleware,
+        CORSMiddleware,  # ty: ignore[invalid-argument-type]
         allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
