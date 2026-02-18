@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from app.core.types import UserId
 from app.domain.user.entity import User
 
 
@@ -9,7 +10,7 @@ class IUserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def find_by_id(self, user_id: str) -> User | None:
+    def find_by_id(self, user_id: UserId) -> User | None:
         raise NotImplementedError
 
     @abstractmethod
