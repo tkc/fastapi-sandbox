@@ -31,9 +31,7 @@ class UserService:
         users = self._user_repository.find_all()
         return [UserResponse.from_entity(user) for user in users]
 
-    def search_users(
-        self, name: str | None, email: str | None
-    ) -> list[UserResponse]:
+    def search_users(self, name: str | None, email: str | None) -> list[UserResponse]:
         if name and email:
             users = self._user_repository.search_by_name(name)
             users = [u for u in users if u.email == email]

@@ -27,9 +27,7 @@ class TestCreateUser:
         repo = MagicMock(spec=IUserRepository)
         service = UserService(user_repository=repo)
 
-        result = service.create_user(
-            UserCreate(name="Taro", email="taro@example.com", age=30, address="Tokyo")
-        )
+        result = service.create_user(UserCreate(name="Taro", email="taro@example.com", age=30, address="Tokyo"))
 
         repo.save.assert_called_once()
         saved_user = repo.save.call_args[0][0]
