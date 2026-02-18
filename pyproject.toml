@@ -1,0 +1,21 @@
+[project]
+name = "fastapi-sandox"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.42.50",
+    "dependency-injector>=4.48.3",
+    "email-validator>=2.3.0",
+    "fastapi>=0.129.0",
+    "pydantic-settings>=2.13.0",
+    "uvicorn>=0.41.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+]
