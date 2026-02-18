@@ -2,6 +2,7 @@ from injector import inject
 
 from app.core.decorators import log_action
 from app.core.exceptions import UserNotFoundError
+from app.core.types import UserId
 from app.domain.user.entity import User
 from app.domain.user.i_user_repository import IUserRepository
 from app.schemas.user import UserCreate, UserResponse
@@ -24,7 +25,7 @@ class UserService:
         return UserResponse.from_entity(user)
 
     @log_action()
-    def get_user(self, user_id: str) -> UserResponse:
+    def get_user(self, user_id: UserId) -> UserResponse:
         user = self._user_repository.find_by_id(user_id)
         if user is None:
             raise UserNotFoundError(user_id)

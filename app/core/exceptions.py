@@ -1,3 +1,6 @@
+from app.core.types import UserId
+
+
 class AppError(Exception):
     def __init__(self, message: str) -> None:
         self.message = message
@@ -5,7 +8,7 @@ class AppError(Exception):
 
 
 class UserNotFoundError(AppError):
-    def __init__(self, user_id: str) -> None:
+    def __init__(self, user_id: UserId) -> None:
         self.user_id = user_id
         super().__init__(f"User not found: {user_id}")
 

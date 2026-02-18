@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 
 from app.api.dependencies import get_user_service
+from app.core.types import UserId
 from app.schemas.user import UserCreate, UserResponse
 from app.usecase.user.user_service import UserService
 
@@ -26,7 +27,7 @@ def search_users(
 
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user(
-    user_id: str,
+    user_id: UserId,
     service: UserService = Depends(get_user_service),
 ) -> UserResponse:
     return service.get_user(user_id)

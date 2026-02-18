@@ -5,6 +5,7 @@ from botocore.exceptions import BotoCoreError, ClientError
 
 from app.core.decorators import log_action
 from app.core.exceptions import RepositoryError
+from app.core.types import UserId
 from app.domain.user.entity import User
 from app.domain.user.i_user_repository import IUserRepository
 
@@ -21,7 +22,7 @@ class UserDynamoDBRepository(IUserRepository):
             raise RepositoryError(message=f"Failed to save user: {err}", operation="save") from err
 
     @log_action()
-    def find_by_id(self, user_id: str) -> User | None:
+    def find_by_id(self, user_id: UserId) -> User | None:
         try:
             response = self._table.get_item(Key={"user_id": user_id})
         except (ClientError, BotoCoreError) as err:
