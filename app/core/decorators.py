@@ -43,7 +43,7 @@ def log_action(
     exclude_args: frozenset[str] = frozenset(),
 ) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        _action = action_name or func.__qualname__
+        _action = action_name or getattr(func, "__qualname__", str(func))
         _logger = structlog.stdlib.get_logger(func.__module__)
         _sig = inspect.signature(func)
 
