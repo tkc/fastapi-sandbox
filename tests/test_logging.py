@@ -1,6 +1,7 @@
 import json
 import uuid
 
+from app.core.constants import HEADER_REQUEST_ID, HEADER_TRACE_ID
 from app.core.logger import setup_logging
 
 
@@ -9,19 +10,19 @@ class TestTraceId:
 
     def test_response_has_trace_id_header(self, client):
         response = client.get("/users")
-        assert "X-Trace-ID" in response.headers
+        assert HEADER_TRACE_ID in response.headers
         # UUID 形式であること
-        uuid.UUID(response.headers["X-Trace-ID"])
+        uuid.UUID(response.headers[HEADER_TRACE_ID])
 
     def test_custom_request_id_propagated(self, client):
         custom_id = "custom-trace-abc-123"
-        response = client.get("/users", headers={"X-Request-ID": custom_id})
-        assert response.headers["X-Trace-ID"] == custom_id
+        response = client.get("/users", headers={HEADER_REQUEST_ID: custom_id})
+        assert response.headers[HEADER_TRACE_ID] == custom_id
 
     def test_trace_id_in_log_output(self, client, capfd):
         setup_logging(json_logs=True, log_level="INFO")
         response = client.get("/users")
-        trace_id = response.headers["X-Trace-ID"]
+        trace_id = response.headers[HEADER_TRACE_ID]
 
         captured = capfd.readouterr()
         log_lines = [line for line in captured.err.strip().split("\n") if line.strip()]
@@ -43,4 +44,4 @@ class TestTraceId:
     def test_each_request_gets_unique_trace_id(self, client):
         resp1 = client.get("/users")
         resp2 = client.get("/users")
-        assert resp1.headers["X-Trace-ID"] != resp2.headers["X-Trace-ID"]
+        assert resp1.headers[HEADER_TRACE_ID] != resp2.headers[HEADER_TRACE_ID]

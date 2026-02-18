@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from app.core.exceptions import UserNotFoundError
+from app.core.types import UserId
 from app.domain.user.entity import User
 from app.domain.user.i_user_repository import IUserRepository
 from app.schemas.user import UserCreate
@@ -11,7 +12,7 @@ from app.usecase.user.user_service import UserService
 
 def _make_user(**overrides: object) -> User:
     defaults: dict[str, object] = {
-        "user_id": "test-uuid",
+        "user_id": UserId("test-uuid"),
         "name": "Taro",
         "email": "taro@example.com",
         "age": 30,
@@ -44,7 +45,7 @@ class TestGetUser:
         repo.find_by_id.return_value = user
         service = UserService(user_repository=repo)
 
-        result = service.get_user("test-uuid")
+        result = service.get_user(UserId("test-uuid"))
 
         assert result.user_id == "test-uuid"
         assert result.name == "Taro"
@@ -55,7 +56,7 @@ class TestGetUser:
         service = UserService(user_repository=repo)
 
         with pytest.raises(UserNotFoundError):
-            service.get_user("nonexistent")
+            service.get_user(UserId("nonexistent"))
 
 
 class TestListUsers:
