@@ -10,6 +10,7 @@ dependencies = [
     "fastapi>=0.129.0",
     "injector>=0.24.0",
     "pydantic-settings>=2.13.0",
+    "structlog>=25.5.0",
     "uvicorn>=0.41.0",
 ]
 
