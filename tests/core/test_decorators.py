@@ -1,6 +1,12 @@
 import pytest
 import structlog.testing
 
+from app.core.constants import (
+    LOG_ACTION_ERROR,
+    LOG_ACTION_START,
+    LOG_ACTION_SUCCESS,
+    REDACTED,
+)
 from app.core.decorators import log_action
 
 
@@ -15,8 +21,8 @@ class TestLogAction:
 
         assert result == "hello Alice"
         events = [entry["event"] for entry in logs]
-        assert "action.start" in events
-        assert "action.success" in events
+        assert LOG_ACTION_START in events
+        assert LOG_ACTION_SUCCESS in events
 
     def test_error_logged_on_exception(self):
         @log_action()
@@ -27,8 +33,8 @@ class TestLogAction:
             fail()
 
         events = [entry["event"] for entry in logs]
-        assert "action.start" in events
-        assert "action.error" in events
+        assert LOG_ACTION_START in events
+        assert LOG_ACTION_ERROR in events
 
     def test_exception_is_reraised(self):
         @log_action()
@@ -54,8 +60,8 @@ class TestLogAction:
         with structlog.testing.capture_logs() as logs:
             login("alice", secret="p@ssw0rd")
 
-        start_entry = next(e for e in logs if e["event"] == "action.start")
-        assert start_entry["secret"] == "[REDACTED]"
+        start_entry = next(e for e in logs if e["event"] == LOG_ACTION_START)
+        assert start_entry["secret"] == REDACTED
         assert start_entry["user"] == "alice"
 
     def test_custom_action_name(self):
@@ -66,7 +72,7 @@ class TestLogAction:
         with structlog.testing.capture_logs() as logs:
             do_thing()
 
-        start_entry = next(e for e in logs if e["event"] == "action.start")
+        start_entry = next(e for e in logs if e["event"] == LOG_ACTION_START)
         assert start_entry["action"] == "custom.op"
 
     def test_result_summary_for_list(self):
@@ -77,7 +83,7 @@ class TestLogAction:
         with structlog.testing.capture_logs() as logs:
             get_items()
 
-        success_entry = next(e for e in logs if e["event"] == "action.success")
+        success_entry = next(e for e in logs if e["event"] == LOG_ACTION_SUCCESS)
         assert success_entry["result_count"] == 3
 
     def test_result_summary_for_non_list(self):
@@ -88,5 +94,5 @@ class TestLogAction:
         with structlog.testing.capture_logs() as logs:
             get_value()
 
-        success_entry = next(e for e in logs if e["event"] == "action.success")
+        success_entry = next(e for e in logs if e["event"] == LOG_ACTION_SUCCESS)
         assert success_entry["result_type"] == "str"

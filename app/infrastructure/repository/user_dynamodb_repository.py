@@ -5,8 +5,10 @@ from botocore.exceptions import BotoCoreError, ClientError
 
 from app.core.decorators import log_action
 from app.core.exceptions import RepositoryError
+from app.core.types import UserId
 from app.domain.user.entity import User
 from app.domain.user.i_user_repository import IUserRepository
+from app.infrastructure.constants import ATTR_USER_ID, INDEX_EMAIL, INDEX_NAME
 
 
 class UserDynamoDBRepository(IUserRepository):
@@ -21,9 +23,9 @@ class UserDynamoDBRepository(IUserRepository):
             raise RepositoryError(message=f"Failed to save user: {err}", operation="save") from err
 
     @log_action()
-    def find_by_id(self, user_id: str) -> User | None:
+    def find_by_id(self, user_id: UserId) -> User | None:
         try:
-            response = self._table.get_item(Key={"user_id": user_id})
+            response = self._table.get_item(Key={ATTR_USER_ID: user_id})
         except (ClientError, BotoCoreError) as err:
             raise RepositoryError(message=f"Failed to find user: {err}", operation="find_by_id") from err
         item = response.get("Item")
@@ -43,7 +45,7 @@ class UserDynamoDBRepository(IUserRepository):
     def search_by_name(self, name: str) -> list[User]:
         try:
             response = self._table.query(
-                IndexName="name-index",
+                IndexName=INDEX_NAME,
                 KeyConditionExpression=Key("name").eq(name),
             )
         except (ClientError, BotoCoreError) as err:
@@ -57,7 +59,7 @@ class UserDynamoDBRepository(IUserRepository):
     def search_by_email(self, email: str) -> list[User]:
         try:
             response = self._table.query(
-                IndexName="email-index",
+                IndexName=INDEX_EMAIL,
                 KeyConditionExpression=Key("email").eq(email),
             )
         except (ClientError, BotoCoreError) as err:

@@ -3,6 +3,15 @@ from typing import Any
 import boto3
 
 from app.core.config import settings
+from app.infrastructure.constants import (
+    ATTR_EMAIL,
+    ATTR_NAME,
+    ATTR_USER_ID,
+    DEFAULT_READ_CAPACITY,
+    DEFAULT_WRITE_CAPACITY,
+    INDEX_EMAIL,
+    INDEX_NAME,
+)
 
 
 def get_dynamodb_resource() -> Any:
@@ -29,41 +38,41 @@ def create_users_table() -> Any:
     table = dynamodb.create_table(
         TableName=settings.dynamodb_table_name,
         KeySchema=[
-            {"AttributeName": "user_id", "KeyType": "HASH"},
+            {"AttributeName": ATTR_USER_ID, "KeyType": "HASH"},
         ],
         AttributeDefinitions=[
-            {"AttributeName": "user_id", "AttributeType": "S"},
-            {"AttributeName": "name", "AttributeType": "S"},
-            {"AttributeName": "email", "AttributeType": "S"},
+            {"AttributeName": ATTR_USER_ID, "AttributeType": "S"},
+            {"AttributeName": ATTR_NAME, "AttributeType": "S"},
+            {"AttributeName": ATTR_EMAIL, "AttributeType": "S"},
         ],
         GlobalSecondaryIndexes=[
             {
-                "IndexName": "name-index",
+                "IndexName": INDEX_NAME,
                 "KeySchema": [
-                    {"AttributeName": "name", "KeyType": "HASH"},
+                    {"AttributeName": ATTR_NAME, "KeyType": "HASH"},
                 ],
                 "Projection": {"ProjectionType": "ALL"},
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": 5,
-                    "WriteCapacityUnits": 5,
+                    "ReadCapacityUnits": DEFAULT_READ_CAPACITY,
+                    "WriteCapacityUnits": DEFAULT_WRITE_CAPACITY,
                 },
             },
             {
-                "IndexName": "email-index",
+                "IndexName": INDEX_EMAIL,
                 "KeySchema": [
-                    {"AttributeName": "email", "KeyType": "HASH"},
+                    {"AttributeName": ATTR_EMAIL, "KeyType": "HASH"},
                 ],
                 "Projection": {"ProjectionType": "ALL"},
                 "ProvisionedThroughput": {
-                    "ReadCapacityUnits": 5,
-                    "WriteCapacityUnits": 5,
+                    "ReadCapacityUnits": DEFAULT_READ_CAPACITY,
+                    "WriteCapacityUnits": DEFAULT_WRITE_CAPACITY,
                 },
             },
         ],
         BillingMode="PROVISIONED",
         ProvisionedThroughput={
-            "ReadCapacityUnits": 5,
-            "WriteCapacityUnits": 5,
+            "ReadCapacityUnits": DEFAULT_READ_CAPACITY,
+            "WriteCapacityUnits": DEFAULT_WRITE_CAPACITY,
         },
     )
     table.wait_until_exists()

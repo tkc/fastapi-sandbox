@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 
+from app.core.types import UserId
 from app.domain.user.entity import User
 
 
@@ -11,7 +12,7 @@ class UserCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    user_id: str
+    user_id: UserId
     name: str
     email: str
     age: int

@@ -4,13 +4,14 @@ import pytest
 from botocore.exceptions import ClientError
 
 from app.core.exceptions import RepositoryError
+from app.core.types import UserId
 from app.domain.user.entity import User
 from app.infrastructure.repository.user_dynamodb_repository import UserDynamoDBRepository
 
 
 def _make_user() -> User:
     return User(
-        user_id="test-uuid",
+        user_id=UserId("test-uuid"),
         name="Taro",
         email="taro@example.com",
         age=30,
@@ -54,7 +55,7 @@ class TestRepositoryErrorWrapping:
         repo = _make_repo_with_error("get_item")
 
         with pytest.raises(RepositoryError) as exc_info:
-            repo.find_by_id("test-uuid")
+            repo.find_by_id(UserId("test-uuid"))
 
         assert exc_info.value.operation == "find_by_id"
         assert isinstance(exc_info.value.__cause__, ClientError)
