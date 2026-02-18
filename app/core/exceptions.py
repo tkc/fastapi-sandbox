@@ -1,4 +1,16 @@
-class UserNotFoundError(Exception):
+class AppError(Exception):
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(message)
+
+
+class UserNotFoundError(AppError):
     def __init__(self, user_id: str) -> None:
         self.user_id = user_id
         super().__init__(f"User not found: {user_id}")
+
+
+class RepositoryError(AppError):
+    def __init__(self, message: str, operation: str) -> None:
+        self.operation = operation
+        super().__init__(message)

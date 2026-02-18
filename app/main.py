@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.router import v1_router
+from app.core.exception_handlers import register_exception_handlers
 from app.core.logger import setup_logging
 from app.infrastructure.datasource.dynamodb import create_users_table
 from app.middleware.logging_middleware import LoggingMiddleware
@@ -27,6 +28,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    register_exception_handlers(app)
     app.include_router(v1_router)
 
     @app.get("/health")
