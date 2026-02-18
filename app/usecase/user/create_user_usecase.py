@@ -1,9 +1,12 @@
+from injector import inject
+
 from app.domain.user.entity import User
 from app.domain.user.i_user_repository import IUserRepository
 from app.schemas.user import UserCreate, UserResponse
 
 
 class CreateUserUseCase:
+    @inject
     def __init__(self, user_repository: IUserRepository) -> None:
         self._user_repository = user_repository
 

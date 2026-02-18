@@ -1,7 +1,6 @@
-from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 
-from app.container.container import Container
+from app.container.container import DIContainer
 from app.core.exceptions import UserNotFoundError
 from app.schemas.user import UserCreate, UserResponse
 from app.usecase.user.create_user_usecase import CreateUserUseCase
@@ -13,30 +12,23 @@ router = APIRouter()
 
 
 @router.post("", response_model=UserResponse, status_code=201)
-@inject
-def create_user(
-    user: UserCreate,
-    usecase: CreateUserUseCase = Depends(Provide[Container.create_user_usecase]),
-):
+def create_user(user: UserCreate):
+    usecase = DIContainer.resolve(CreateUserUseCase)
     return usecase.execute(user)
 
 
 @router.get("/search", response_model=list[UserResponse])
-@inject
 def search_users(
     name: str | None = Query(default=None),
     email: str | None = Query(default=None),
-    usecase: SearchUsersUseCase = Depends(Provide[Container.search_users_usecase]),
 ):
+    usecase = DIContainer.resolve(SearchUsersUseCase)
     return usecase.execute(name=name, email=email)
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-@inject
-def get_user(
-    user_id: str,
-    usecase: GetUserUseCase = Depends(Provide[Container.get_user_usecase]),
-):
+def get_user(user_id: str):
+    usecase = DIContainer.resolve(GetUserUseCase)
     try:
         return usecase.execute(user_id)
     except UserNotFoundError:
@@ -44,8 +36,6 @@ def get_user(
 
 
 @router.get("", response_model=list[UserResponse])
-@inject
-def list_users(
-    usecase: ListUsersUseCase = Depends(Provide[Container.list_users_usecase]),
-):
+def list_users():
+    usecase = DIContainer.resolve(ListUsersUseCase)
     return usecase.execute()

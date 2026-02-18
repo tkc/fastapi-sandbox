@@ -1,43 +1,35 @@
-from dependency_injector import containers, providers
+from injector import Binder, Injector, Module, singleton
 
+from app.domain.user.i_user_repository import IUserRepository
 from app.infrastructure.datasource.dynamodb import get_table
 from app.infrastructure.repository.user_dynamodb_repository import (
     UserDynamoDBRepository,
 )
-from app.usecase.user.create_user_usecase import CreateUserUseCase
-from app.usecase.user.get_user_usecase import GetUserUseCase
-from app.usecase.user.list_users_usecase import ListUsersUseCase
-from app.usecase.user.search_users_usecase import SearchUsersUseCase
 
 
-class Container(containers.DeclarativeContainer):
-    wiring_config = containers.WiringConfiguration(
-        modules=["app.api.v1.endpoints.users"],
-    )
+class RepositoryModule(Module):
+    def configure(self, binder: Binder) -> None:
+        table = get_table()
+        binder.bind(
+            IUserRepository,
+            to=UserDynamoDBRepository(table=table),
+            scope=singleton,
+        )
 
-    dynamodb_table = providers.Singleton(get_table)
 
-    user_repository = providers.Singleton(
-        UserDynamoDBRepository,
-        table=dynamodb_table,
-    )
+class DIContainer:
+    _injector: Injector | None = None
 
-    create_user_usecase = providers.Factory(
-        CreateUserUseCase,
-        user_repository=user_repository,
-    )
+    @classmethod
+    def get_injector(cls) -> Injector:
+        if cls._injector is None:
+            cls._injector = Injector([RepositoryModule])
+        return cls._injector
 
-    get_user_usecase = providers.Factory(
-        GetUserUseCase,
-        user_repository=user_repository,
-    )
+    @classmethod
+    def resolve(cls, klass: type) -> object:
+        return cls.get_injector().get(klass)
 
-    list_users_usecase = providers.Factory(
-        ListUsersUseCase,
-        user_repository=user_repository,
-    )
-
-    search_users_usecase = providers.Factory(
-        SearchUsersUseCase,
-        user_repository=user_repository,
-    )
+    @classmethod
+    def reset(cls) -> None:
+        cls._injector = None

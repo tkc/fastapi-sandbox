@@ -6,9 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "boto3>=1.42.50",
-    "dependency-injector>=4.48.3",
     "email-validator>=2.3.0",
     "fastapi>=0.129.0",
+    "injector>=0.24.0",
     "pydantic-settings>=2.13.0",
     "uvicorn>=0.41.0",
 ]
