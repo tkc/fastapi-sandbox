@@ -30,9 +30,7 @@ class TestCreateUserUseCase:
         repo = MagicMock(spec=IUserRepository)
         usecase = CreateUserUseCase(user_repository=repo)
 
-        result = usecase.execute(
-            UserCreate(name="Taro", email="taro@example.com", age=30, address="Tokyo")
-        )
+        result = usecase.execute(UserCreate(name="Taro", email="taro@example.com", age=30, address="Tokyo"))
 
         repo.save.assert_called_once()
         saved_user = repo.save.call_args[0][0]

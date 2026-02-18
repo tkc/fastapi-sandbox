@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from injector import Binder, Injector, Module, singleton
 
 from app.domain.user.i_user_repository import IUserRepository
@@ -5,6 +7,8 @@ from app.infrastructure.datasource.dynamodb import get_table
 from app.infrastructure.repository.user_dynamodb_repository import (
     UserDynamoDBRepository,
 )
+
+T = TypeVar("T")
 
 
 class RepositoryModule(Module):
@@ -27,7 +31,7 @@ class DIContainer:
         return cls._injector
 
     @classmethod
-    def resolve(cls, klass: type) -> object:
+    def resolve(cls, klass: type[T]) -> T:
         return cls.get_injector().get(klass)
 
     @classmethod

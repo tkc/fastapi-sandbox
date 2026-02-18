@@ -1,12 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query
 
+from app.container.container import DIContainer
 from app.core.exceptions import UserNotFoundError
-from app.dependencies.user import (
-    get_create_user_usecase,
-    get_get_user_usecase,
-    get_list_users_usecase,
-    get_search_users_usecase,
-)
 from app.schemas.user import UserCreate, UserResponse
 from app.usecase.user.create_user_usecase import CreateUserUseCase
 from app.usecase.user.get_user_usecase import GetUserUseCase
@@ -17,10 +12,8 @@ router = APIRouter()
 
 
 @router.post("", response_model=UserResponse, status_code=201)
-def create_user(
-    user: UserCreate,
-    usecase: CreateUserUseCase = Depends(get_create_user_usecase),
-):
+def create_user(user: UserCreate) -> UserResponse:
+    usecase = DIContainer.resolve(CreateUserUseCase)
     return usecase.execute(user)
 
 
@@ -28,24 +21,21 @@ def create_user(
 def search_users(
     name: str | None = Query(default=None),
     email: str | None = Query(default=None),
-    usecase: SearchUsersUseCase = Depends(get_search_users_usecase),
-):
+) -> list[UserResponse]:
+    usecase = DIContainer.resolve(SearchUsersUseCase)
     return usecase.execute(name=name, email=email)
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-def get_user(
-    user_id: str,
-    usecase: GetUserUseCase = Depends(get_get_user_usecase),
-):
+def get_user(user_id: str) -> UserResponse:
+    usecase = DIContainer.resolve(GetUserUseCase)
     try:
         return usecase.execute(user_id)
-    except UserNotFoundError:
-        raise HTTPException(status_code=404, detail="User not found")
+    except UserNotFoundError as err:
+        raise HTTPException(status_code=404, detail="User not found") from err
 
 
 @router.get("", response_model=list[UserResponse])
-def list_users(
-    usecase: ListUsersUseCase = Depends(get_list_users_usecase),
-):
+def list_users() -> list[UserResponse]:
+    usecase = DIContainer.resolve(ListUsersUseCase)
     return usecase.execute()

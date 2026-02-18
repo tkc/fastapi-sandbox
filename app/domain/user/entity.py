@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pydantic import BaseModel
 
@@ -26,5 +26,5 @@ class User(BaseModel):
             email=email,
             age=age,
             address=address,
-            created_at=datetime.now(timezone.utc).isoformat(),
+            created_at=datetime.now(UTC).isoformat(),
         )
