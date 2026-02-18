@@ -1,5 +1,8 @@
 from unittest.mock import MagicMock
 
+import pytest
+
+from app.core.exceptions import UserNotFoundError
 from app.domain.user.entity import User
 from app.domain.user.i_user_repository import IUserRepository
 from app.schemas.user import UserCreate
@@ -56,8 +59,7 @@ class TestGetUserUseCase:
         repo.find_by_id.return_value = None
         usecase = GetUserUseCase(user_repository=repo)
 
-        import pytest
-        with pytest.raises(Exception):
+        with pytest.raises(UserNotFoundError):
             usecase.execute("nonexistent")
 
 

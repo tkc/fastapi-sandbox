@@ -1,3 +1,5 @@
+from typing import Any
+
 from boto3.dynamodb.conditions import Key
 
 from app.domain.user.entity import User
@@ -5,7 +7,7 @@ from app.domain.user.i_user_repository import IUserRepository
 
 
 class UserDynamoDBRepository(IUserRepository):
-    def __init__(self, table) -> None:
+    def __init__(self, table: Any) -> None:
         self._table = table
 
     def save(self, user: User) -> None:
